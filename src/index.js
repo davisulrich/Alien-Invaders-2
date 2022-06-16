@@ -1,7 +1,7 @@
 // Yourtube: https://www.youtube.com/watch?v=qCBiKJbLcFI
 
 // To do:
-// - make the enemies blow up when they get hit BOOM!
+// BOOM - made the enemies blow up when they get hit
 // - make a start screen
 // - make a level 2
 // - find a better noise for enemies dying
@@ -15,15 +15,17 @@ import BulletController from "/src/bulletController.js";
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
+const GAME_STATE = {
+  STARTSCREEN: 0,
+  RUNNING: 1
+};
+let gameState = GAME_STATE.STARTSCREEN;
+
 canvas.width = 600;
 canvas.height = 625;
 
 const background = new Image();
 background.src = "src/images/pixel_stars.jpg";
-
-// const gameStartAudio = new Audio("src/audio/computerNoise_000.ogg");
-// gameStartAudio.volume = 0.08;
-// gameStartAudio.play();
 
 // bullet controllers
 const playerBulletController = new BulletController(
@@ -44,17 +46,53 @@ const player = new Player(canvas, 18, playerBulletController);
 let isGameOver = false;
 let didWin = false;
 
+let startGame = (event) => {
+  if (event.code === "Space") {
+    if (gameState === GAME_STATE.STARTSCREEN) {
+      gameState = GAME_STATE.RUNNING;
+      const gameStartAudio = new Audio("src/audio/computerNoise_000.ogg");
+      gameStartAudio.volume = 0.03;
+      gameStartAudio.play();
+    }
+  }
+};
+document.addEventListener("keydown", startGame);
+
 // game loop
 function game() {
-  checkGameOver();
-  ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-  displayGameOver();
-  if (!isGameOver) {
-    enemyController.draw(ctx);
-    player.draw(ctx);
-    playerBulletController.draw(ctx);
-    enemyBulletController.draw(ctx);
+  if (gameState === GAME_STATE.STARTSCREEN) {
+    showStartScreen(ctx);
   }
+  if (gameState === GAME_STATE.RUNNING) {
+    checkGameOver();
+    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+    displayGameOver();
+    if (!isGameOver) {
+      enemyController.draw(ctx);
+      player.draw(ctx);
+      playerBulletController.draw(ctx);
+      enemyBulletController.draw(ctx);
+    }
+  }
+}
+
+function showStartScreen(ctx) {
+  ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+  const text1 = "Welcome to";
+  const text1b = "Alien Invaders";
+  ctx.fillStyle = "white";
+  ctx.font = "70px Courier New";
+  ctx.fillText(text1, 100, canvas.height / 3);
+  ctx.fillText(text1b, 10, canvas.height / 2);
+
+  ctx.font = "20px Courier New";
+  const text2 = "by Davis Ulrich";
+  ctx.fillText(text2, canvas.width / 3, (2 * canvas.height) / 3);
+  const text3 = "6/16/22";
+  ctx.fillText(text3, canvas.width / 2.4, (3 * canvas.height) / 4);
+
+  const text4 = "Press Space Bar to Start";
+  ctx.fillText(text4, canvas.width / 3.8, (6 * canvas.height) / 7);
 }
 
 function checkGameOver() {
