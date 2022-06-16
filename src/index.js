@@ -2,7 +2,7 @@
 
 // To do:
 // BOOM - made the enemies blow up when they get hit
-// - make a start screen
+// BOOM - make a start screen
 // - make a level 2
 // - find a better noise for enemies dying
 // - swap the current lasers for pixel lazer images
@@ -36,13 +36,15 @@ const playerBulletController = new BulletController(
 );
 const enemyBulletController = new BulletController(canvas, 4, "red", "enemy");
 
-const enemyController = new EnemyController(
+let enemyController = new EnemyController(
   canvas,
   enemyBulletController,
-  playerBulletController
+  playerBulletController,
+  1
 );
 const player = new Player(canvas, 18, playerBulletController);
 
+let current_level = 1;
 let isGameOver = false;
 let didWin = false;
 
@@ -51,7 +53,7 @@ let startGame = (event) => {
     if (gameState === GAME_STATE.STARTSCREEN) {
       gameState = GAME_STATE.RUNNING;
       const gameStartAudio = new Audio("src/audio/computerNoise_000.ogg");
-      gameStartAudio.volume = 0.03;
+      gameStartAudio.volume = 0.022;
       gameStartAudio.play();
     }
   }
@@ -109,11 +111,23 @@ function checkGameOver() {
     // playerDeathSound.play();
   }
   if (enemyController.enemyRows.length === 0) {
-    didWin = true;
-    isGameOver = true;
-    let playerWinSound = new Audio("/src/audio/small-win.wav");
-    playerWinSound.volume = 0.25;
-    playerWinSound.play();
+    if (current_level === 1) {
+      current_level = 2;
+      enemyController = new EnemyController(
+        canvas,
+        enemyBulletController,
+        playerBulletController,
+        2
+      );
+      return;
+    }
+    if (current_level === 2) {
+      didWin = true;
+      isGameOver = true;
+      let playerWinSound = new Audio("/src/audio/small-win.wav");
+      playerWinSound.volume = 0.25;
+      playerWinSound.play();
+    }
   }
 }
 

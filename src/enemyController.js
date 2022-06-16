@@ -28,10 +28,11 @@ export default class EnemyController {
   moveDownTimerDefault = 30;
   moveDownTimer = this.moveDownTimerDefault;
 
-  constructor(canvas, enemyBulletController, playerBulletController) {
+  constructor(canvas, enemyBulletController, playerBulletController, level) {
     this.canvas = canvas;
     this.enemyBulletController = enemyBulletController;
     this.playerBulletController = playerBulletController;
+    this.level = level;
     this.createEnemies();
     this.enemyDeathSound = new Audio("/src/audio/enemy_death.ogg");
     this.enemyDeathSound.volume = 0.07;
@@ -95,7 +96,7 @@ export default class EnemyController {
   updateVelocityAndDirection() {
     for (const enemyRow of this.enemyRows) {
       if (this.currentDirection === movingDirection.right) {
-        this.xVelocity = this.defaultXVelocity;
+        this.xVelocity = this.defaultXVelocity * this.level;
         this.yVelocity = 0;
 
         const rightMostEnemy = enemyRow[enemyRow.length - 1];
@@ -108,7 +109,7 @@ export default class EnemyController {
           break;
         }
       } else if (this.currentDirection === movingDirection.left) {
-        this.xVelocity = -this.defaultXVelocity;
+        this.xVelocity = -this.defaultXVelocity * this.level;
         this.yVelocity = 0;
         const leftMostEnemy = enemyRow[0];
         if (leftMostEnemy.x - 5 <= 0) {
