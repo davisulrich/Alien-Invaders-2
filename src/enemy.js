@@ -1,15 +1,16 @@
 export default class Enemy {
-  constructor(x, y, imageNumber) {
+  constructor(x, y, imageNumber, level) {
     this.x = x;
     this.y = y;
     this.width = 40;
     this.height = 40;
+    this.level = level;
 
     this.showExplosionTimerDefault = 5;
     this.showExplosionTimer = this.showExplosionTimerDefault;
 
     this.image = new Image();
-    this.image.src = `/src/images/pixel_enemy_${imageNumber}.png`;
+    this.image.src = `/src/images/pixel_enemy_${imageNumber * this.level}.png`;
 
     this.isDead = false;
     this.explosionImage = new Image();

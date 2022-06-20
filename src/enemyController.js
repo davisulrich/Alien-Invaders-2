@@ -44,7 +44,12 @@ export default class EnemyController {
       row.forEach((enemyNumber, enemyIndex) => {
         if (enemyNumber > 0) {
           this.enemyRows[rowIndex].push(
-            new Enemy(5 + enemyIndex * 55, rowIndex * 50, enemyNumber)
+            new Enemy(
+              5 + enemyIndex * 55,
+              rowIndex * 50,
+              enemyNumber,
+              this.level
+            )
           );
         }
       });
@@ -126,7 +131,7 @@ export default class EnemyController {
 
   moveDown(newDirection) {
     this.xVelocity = 0;
-    this.yVelocity = this.defaultYVelocity;
+    this.yVelocity = this.defaultYVelocity * this.level;
     if (this.moveDownTimer <= 0) {
       this.currentDirection = newDirection;
       return true;

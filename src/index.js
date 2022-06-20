@@ -3,10 +3,13 @@
 // To do:
 // BOOM - made the enemies blow up when they get hit
 // BOOM - make a start screen
-// - make a level 2
+// BOOM - make a level 2
+// BOOM - make level 1 --> level 2 noise
+// BOOM - make level 2 have different enemies
 // - find a better noise for enemies dying
 // - swap the current lasers for pixel lazer images
 // - give the player the choice of ship
+// - make level 3
 
 import EnemyController from "/src/enemyController.js";
 import Player from "/src/player.js";
@@ -108,11 +111,14 @@ function checkGameOver() {
     isGameOver = true;
     let playerDeathSound = new Audio("/src/audio/fast-game-over.wav");
     playerDeathSound.volume = 0.15;
-    // playerDeathSound.play();
+    playerDeathSound.play();
   }
   if (enemyController.enemyRows.length === 0) {
     if (current_level === 1) {
       current_level = 2;
+      let levelUpSound = new Audio("/src/audio/level-up.wav");
+      levelUpSound.volume = 0.35;
+      levelUpSound.play();
       enemyController = new EnemyController(
         canvas,
         enemyBulletController,
