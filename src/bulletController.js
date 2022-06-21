@@ -16,7 +16,7 @@ export default class BulletController {
     else this.shootSound.volume = 0.1;
 
     if (this.level === 3 && this.bulletType === "player") {
-      this.bulletColor = "#6eccff";
+      this.bulletColor = "#6eddff";
     }
   }
 

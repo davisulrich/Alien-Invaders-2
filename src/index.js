@@ -8,8 +8,9 @@
 // BOOM - make level 2 have different enemies
 // BOOM - make the bullets die when they get half way down the ship
 // BOOM - make level 3
+// BOOm - level 3 bullets are blue
+// - add a function to reset all variables in the case of gameover
 // - on the game over screen, allow hitting space bar to start over
-// - swap the current lasers for pixel lazer images
 // - give the player the choice of ship
 
 import EnemyController from "/src/enemyController.js";
@@ -21,7 +22,8 @@ const ctx = canvas.getContext("2d");
 
 const GAME_STATE = {
   STARTSCREEN: 0,
-  RUNNING: 1
+  RUNNING: 1,
+  GAMEOVER: 2
 };
 let gameState = GAME_STATE.STARTSCREEN;
 let current_level = 3;
@@ -32,6 +34,8 @@ canvas.height = 625;
 const background = new Image();
 background.src = "/src/images/pixel_stars.jpg";
 
+const gameStartAudio = new Audio("src/audio/computerNoise_000.ogg");
+gameStartAudio.volume = 0.022;
 let levelUpSound = new Audio("/src/audio/level-up.wav");
 levelUpSound.volume = 0.35;
 let playerWinSound = new Audio("/src/audio/small-win.wav");
@@ -68,14 +72,24 @@ let didWin = false;
 
 let startGame = (event) => {
   if (event.code === "Space") {
-    if (gameState === GAME_STATE.STARTSCREEN) {
+    if (gameState === GAME_STATE.STARTSCREEN || isGameOver) {
+      // if you lost, reset everything
+      if (isGameOver) {
+        isGameOver = false;
+        current_level = 1;
+        enemyController = new EnemyController(
+          canvas,
+          enemyBulletController,
+          playerBulletController,
+          current_level
+        );
+      }
       gameState = GAME_STATE.RUNNING;
-      const gameStartAudio = new Audio("src/audio/computerNoise_000.ogg");
-      gameStartAudio.volume = 0.022;
       gameStartAudio.play();
     }
   }
 };
+
 document.addEventListener("keydown", startGame);
 
 // game loop
@@ -124,6 +138,7 @@ function checkGameOver() {
     enemyController.collideWith(player)
   ) {
     isGameOver = true;
+    // gameState = GAME_STATE.GAMEOVER;
     playerDeathSound.play();
   }
   if (enemyController.enemyRows.length === 0) {
@@ -137,8 +152,7 @@ function checkGameOver() {
         current_level
       );
       return;
-    }
-    if (current_level === 2) {
+    } else if (current_level === 2) {
       current_level = 3;
       levelUpSound.play();
       enemyController = new EnemyController(
@@ -148,10 +162,10 @@ function checkGameOver() {
         current_level
       );
       return;
-    }
-    if (current_level === 3) {
+    } else if (current_level === 3) {
       didWin = true;
       isGameOver = true;
+      // gameState = GAME_STATE.GAMEOVER;
       playerWinSound.play();
     }
   }

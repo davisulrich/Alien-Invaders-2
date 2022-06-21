@@ -107,7 +107,7 @@ export default class EnemyController {
     }
     for (const enemyRow of this.enemyRows) {
       if (this.currentDirection === movingDirection.right) {
-        this.xVelocity = this.defaultXVelocity * this.level;
+        this.xVelocity = this.defaultXVelocity;
         this.yVelocity = 0;
 
         const rightMostEnemy = enemyRow[enemyRow.length - 1];
@@ -120,7 +120,7 @@ export default class EnemyController {
           break;
         }
       } else if (this.currentDirection === movingDirection.left) {
-        this.xVelocity = -this.defaultXVelocity * this.level;
+        this.xVelocity = -this.defaultXVelocity;
         this.yVelocity = 0;
         const leftMostEnemy = enemyRow[0];
         if (leftMostEnemy.x - 5 <= 0) {
