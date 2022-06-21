@@ -99,6 +99,12 @@ export default class EnemyController {
   }
 
   updateVelocityAndDirection() {
+    if (this.level === 2) {
+      this.defaultXVelocity = 2;
+    } else if (this.level === 3) {
+      this.defaultXVelocity = 2;
+      this.defaultYVelocity = 2;
+    }
     for (const enemyRow of this.enemyRows) {
       if (this.currentDirection === movingDirection.right) {
         this.xVelocity = this.defaultXVelocity * this.level;
@@ -131,7 +137,7 @@ export default class EnemyController {
 
   moveDown(newDirection) {
     this.xVelocity = 0;
-    this.yVelocity = this.defaultYVelocity * this.level;
+    this.yVelocity = this.defaultYVelocity;
     if (this.moveDownTimer <= 0) {
       this.currentDirection = newDirection;
       return true;

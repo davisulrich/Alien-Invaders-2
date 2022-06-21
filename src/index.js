@@ -1,4 +1,4 @@
-// Yourtube: https://www.youtube.com/watch?v=qCBiKJbLcFI
+// Youtube: https://www.youtube.com/watch?v=qCBiKJbLcFI
 
 // To do:
 // BOOM - made the enemies blow up when they get hit
@@ -6,10 +6,11 @@
 // BOOM - make a level 2
 // BOOM - make level 1 --> level 2 noise
 // BOOM - make level 2 have different enemies
-// - find a better noise for enemies dying
+// BOOM - make the bullets die when they get half way down the ship
+// BOOM - make level 3
+// - on the game over screen, allow hitting space bar to start over
 // - swap the current lasers for pixel lazer images
 // - give the player the choice of ship
-// - make level 3
 
 import EnemyController from "/src/enemyController.js";
 import Player from "/src/player.js";
@@ -23,31 +24,45 @@ const GAME_STATE = {
   RUNNING: 1
 };
 let gameState = GAME_STATE.STARTSCREEN;
+let current_level = 3;
 
 canvas.width = 600;
 canvas.height = 625;
 
 const background = new Image();
-background.src = "src/images/pixel_stars.jpg";
+background.src = "/src/images/pixel_stars.jpg";
+
+let levelUpSound = new Audio("/src/audio/level-up.wav");
+levelUpSound.volume = 0.35;
+let playerWinSound = new Audio("/src/audio/small-win.wav");
+playerWinSound.volume = 0.25;
+let playerDeathSound = new Audio("/src/audio/fast-game-over.wav");
+playerDeathSound.volume = 0.15;
 
 // bullet controllers
 const playerBulletController = new BulletController(
   canvas,
   15,
-  "limegreen",
-  "player"
+  "#9df716",
+  "player",
+  current_level
 );
-const enemyBulletController = new BulletController(canvas, 4, "red", "enemy");
+const enemyBulletController = new BulletController(
+  canvas,
+  4,
+  "red",
+  "enemy",
+  current_level
+);
 
 let enemyController = new EnemyController(
   canvas,
   enemyBulletController,
   playerBulletController,
-  1
+  current_level
 );
 const player = new Player(canvas, 18, playerBulletController);
 
-let current_level = 1;
 let isGameOver = false;
 let didWin = false;
 
@@ -86,18 +101,18 @@ function showStartScreen(ctx) {
   const text1 = "Welcome to";
   const text1b = "Alien Invaders";
   ctx.fillStyle = "white";
-  ctx.font = "70px Courier New";
-  ctx.fillText(text1, 100, canvas.height / 3);
-  ctx.fillText(text1b, 10, canvas.height / 2);
+  ctx.font = "60px Courier New";
+  ctx.fillText(text1, 120, canvas.height / 3);
+  ctx.fillText(text1b, 50, canvas.height / 2 - 20);
 
   ctx.font = "20px Courier New";
   const text2 = "by Davis Ulrich";
-  ctx.fillText(text2, canvas.width / 3, (2 * canvas.height) / 3);
+  ctx.fillText(text2, canvas.width / 3, (3 * canvas.height) / 5);
   const text3 = "6/16/22";
-  ctx.fillText(text3, canvas.width / 2.4, (3 * canvas.height) / 4);
+  ctx.fillText(text3, canvas.width / 2.4, (3 * canvas.height) / 5 + 30);
 
   const text4 = "Press Space Bar to Start";
-  ctx.fillText(text4, canvas.width / 3.8, (6 * canvas.height) / 7);
+  ctx.fillText(text4, canvas.width / 3.8, (5 * canvas.height) / 7 + 25);
 }
 
 function checkGameOver() {
@@ -109,29 +124,34 @@ function checkGameOver() {
     enemyController.collideWith(player)
   ) {
     isGameOver = true;
-    let playerDeathSound = new Audio("/src/audio/fast-game-over.wav");
-    playerDeathSound.volume = 0.15;
     playerDeathSound.play();
   }
   if (enemyController.enemyRows.length === 0) {
     if (current_level === 1) {
       current_level = 2;
-      let levelUpSound = new Audio("/src/audio/level-up.wav");
-      levelUpSound.volume = 0.35;
       levelUpSound.play();
       enemyController = new EnemyController(
         canvas,
         enemyBulletController,
         playerBulletController,
-        2
+        current_level
       );
       return;
     }
     if (current_level === 2) {
+      current_level = 3;
+      levelUpSound.play();
+      enemyController = new EnemyController(
+        canvas,
+        enemyBulletController,
+        playerBulletController,
+        current_level
+      );
+      return;
+    }
+    if (current_level === 3) {
       didWin = true;
       isGameOver = true;
-      let playerWinSound = new Audio("/src/audio/small-win.wav");
-      playerWinSound.volume = 0.25;
       playerWinSound.play();
     }
   }

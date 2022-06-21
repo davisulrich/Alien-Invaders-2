@@ -4,15 +4,20 @@ export default class BulletController {
   bullets = [];
   timeTillNextBullet = 0;
 
-  constructor(canvas, maxBulletsAtATime, bulletColor, bulletType) {
+  constructor(canvas, maxBulletsAtATime, bulletColor, bulletType, level) {
     this.canvas = canvas;
     this.maxBulletsAtATime = maxBulletsAtATime;
     this.bulletColor = bulletColor;
     this.bulletType = bulletType;
+    this.level = level;
 
     this.shootSound = new Audio("/src/audio/" + bulletType + "_laser.ogg");
     if (this.bulletType === "enemy") this.shootSound.volume = 0.0;
     else this.shootSound.volume = 0.1;
+
+    if (this.level === 3 && this.bulletType === "player") {
+      this.bulletColor = "#6eccff";
+    }
   }
 
   shoot(x, y, velocity, timeTillNextBullet = 3) {
@@ -42,7 +47,9 @@ export default class BulletController {
 
   draw(ctx) {
     this.bullets = this.bullets.filter(
-      (bullet) => bullet.y + bullet.height > 0 && bullet.y <= this.canvas.height
+      (bullet) =>
+        bullet.y + bullet.height > 0 &&
+        bullet.y <= this.canvas.height - bullet.height - 60
     );
     this.bullets.forEach((bullet) => bullet.draw(ctx));
     if (this.timeTillNextBullet > 0) {
