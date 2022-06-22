@@ -8,9 +8,10 @@
 // BOOM - make level 2 have different enemies
 // BOOM - make the bullets die when they get half way down the ship
 // BOOM - make level 3
-// BOOm - level 3 bullets are blue
-// - add a function to reset all variables in the case of gameover
-// - on the game over screen, allow hitting space bar to start over
+// BOOM - level 3 bullets are blue
+// - get player shoot sounds back
+// BOOM - add a function to reset all variables in the case of gameover
+// BOOM - on the game over screen, allow hitting space bar to start over
 // - give the player the choice of ship
 
 import EnemyController from "/src/enemyController.js";
@@ -36,22 +37,22 @@ background.src = "/src/images/pixel_stars.jpg";
 
 const gameStartAudio = new Audio("src/audio/computerNoise_000.ogg");
 gameStartAudio.volume = 0.022;
-let levelUpSound = new Audio("/src/audio/level-up.wav");
+const levelUpSound = new Audio("/src/audio/level-up.wav");
 levelUpSound.volume = 0.35;
-let playerWinSound = new Audio("/src/audio/small-win.wav");
+const playerWinSound = new Audio("/src/audio/small-win.wav");
 playerWinSound.volume = 0.25;
-let playerDeathSound = new Audio("/src/audio/fast-game-over.wav");
+const playerDeathSound = new Audio("/src/audio/fast-game-over.wav");
 playerDeathSound.volume = 0.15;
 
 // bullet controllers
-const playerBulletController = new BulletController(
+let playerBulletController = new BulletController(
   canvas,
   15,
   "#9df716",
   "player",
   current_level
 );
-const enemyBulletController = new BulletController(
+let enemyBulletController = new BulletController(
   canvas,
   4,
   "red",
@@ -65,7 +66,7 @@ let enemyController = new EnemyController(
   playerBulletController,
   current_level
 );
-const player = new Player(canvas, 18, playerBulletController);
+let player = new Player(canvas, 18, playerBulletController);
 
 let isGameOver = false;
 let didWin = false;
@@ -75,14 +76,9 @@ let startGame = (event) => {
     if (gameState === GAME_STATE.STARTSCREEN || isGameOver) {
       // if you lost, reset everything
       if (isGameOver) {
-        isGameOver = false;
         current_level = 1;
-        enemyController = new EnemyController(
-          canvas,
-          enemyBulletController,
-          playerBulletController,
-          current_level
-        );
+        isGameOver = false;
+        resetAllVariables();
       }
       gameState = GAME_STATE.RUNNING;
       gameStartAudio.play();
@@ -108,6 +104,31 @@ function game() {
       enemyBulletController.draw(ctx);
     }
   }
+}
+
+function resetAllVariables() {
+  playerBulletController = new BulletController(
+    canvas,
+    15,
+    "#9df716",
+    "player",
+    current_level
+  );
+  enemyBulletController = new BulletController(
+    canvas,
+    4,
+    "red",
+    "enemy",
+    current_level
+  );
+
+  enemyController = new EnemyController(
+    canvas,
+    enemyBulletController,
+    playerBulletController,
+    current_level
+  );
+  player = new Player(canvas, 18, playerBulletController);
 }
 
 function showStartScreen(ctx) {
@@ -138,7 +159,6 @@ function checkGameOver() {
     enemyController.collideWith(player)
   ) {
     isGameOver = true;
-    // gameState = GAME_STATE.GAMEOVER;
     playerDeathSound.play();
   }
   if (enemyController.enemyRows.length === 0) {
@@ -165,7 +185,6 @@ function checkGameOver() {
     } else if (current_level === 3) {
       didWin = true;
       isGameOver = true;
-      // gameState = GAME_STATE.GAMEOVER;
       playerWinSound.play();
     }
   }
@@ -178,18 +197,22 @@ function displayGameOver() {
       let text = "You Won!";
       ctx.fillStyle = "white";
       ctx.font = "70px Courier New";
-      ctx.fillText(text, canvas.width / 4, canvas.height / 2);
+      ctx.fillText(text, canvas.width / 4, canvas.height / 2.2);
+
+      let text2 = "Press Space Bar to Restart";
+      ctx.font = "20px Courier New";
+      ctx.fillText(text2, canvas.width / 4, (3 * canvas.height) / 5);
     }
     // you lost :(
     else {
       let text = "Game Over!";
       ctx.fillStyle = "white";
       ctx.font = "70px Courier New";
-      ctx.fillText(text, canvas.width / 6, canvas.height / 2);
+      ctx.fillText(text, canvas.width / 6, canvas.height / 2.2);
 
-      // ctx.font = "8px Courier New";
-      // let text2 = "You Blow!";
-      // ctx.fillText(text2, canvas.width / 2 - 10, (canvas.height * 4) / 7);
+      let text2 = "Press Space Bar to Restart";
+      ctx.font = "20px Courier New";
+      ctx.fillText(text2, canvas.width / 4, (3 * canvas.height) / 5);
     }
   }
 }

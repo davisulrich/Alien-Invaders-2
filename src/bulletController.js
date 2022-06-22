@@ -12,25 +12,25 @@ export default class BulletController {
     this.level = level;
 
     this.shootSound = new Audio("/src/audio/" + bulletType + "_laser.ogg");
-    if (this.bulletType === "enemy") this.shootSound.volume = 0.0;
-    else this.shootSound.volume = 0.1;
+    if (this.bulletType === "player") this.shootSound.volume = 0.1;
+    else this.shootSound.volume = 0.01;
 
     if (this.level === 3 && this.bulletType === "player") {
       this.bulletColor = "#6eddff";
     }
   }
 
-  shoot(x, y, velocity, timeTillNextBullet = 3) {
+  shoot(x, y, velocity, timeTillNextBullet = 7) {
     if (
       this.timeTillNextBullet <= 0
       // && this.bullets.length < this.maxBulletsAtATime
     ) {
       const bullet = new Bullet(this.canvas, x, y, velocity, this.bulletColor);
       this.bullets.push(bullet);
+      this.timeTillNextBullet = timeTillNextBullet;
       this.shootSound.currentTime = 0;
       this.shootSound.play();
-
-      this.timeTillNextBullet = timeTillNextBullet;
+      console.log("shoot sound please!");
     }
   }
 
